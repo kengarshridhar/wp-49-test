@@ -401,14 +401,7 @@ function require_wp_db() {
 		return;
 	}
 
-    $dbuser     = defined( 'DB_USER' ) ? DB_USER : '';
-	$dbpassword = defined( 'DB_PASSWORD' ) ? DB_PASSWORD : '';
-	$dbname     = defined( 'DB_NAME' ) ? DB_NAME : '';
-	$dbhost     = defined( 'DB_HOST' ) ? DB_HOST : '';
-
-	$wpdb = new wpdb( $dbuser, $dbpassword, $dbname, $dbhost );
-	
-// 	$wpdb = new wpdb( DB_USER, DB_PASSWORD, DB_NAME, DB_HOST );
+	$wpdb = new wpdb( DB_USER, DB_PASSWORD, DB_NAME, DB_HOST );
 }
 
 /**
@@ -655,11 +648,11 @@ function wp_set_internal_encoding() {
  */
 function wp_magic_quotes() {
 	// If already slashed, strip.
-// 	if ( get_magic_quotes_gpc() ) {
-// 		$_GET    = stripslashes_deep( $_GET    );
-// 		$_POST   = stripslashes_deep( $_POST   );
-// 		$_COOKIE = stripslashes_deep( $_COOKIE );
-// 	}
+	if ( get_magic_quotes_gpc() ) {
+		$_GET    = stripslashes_deep( $_GET    );
+		$_POST   = stripslashes_deep( $_POST   );
+		$_COOKIE = stripslashes_deep( $_COOKIE );
+	}
 
 	// Escape with wpdb.
 	$_GET    = add_magic_quotes( $_GET    );
@@ -1163,42 +1156,4 @@ function wp_finalize_scraping_edited_file_errors( $scrape_key ) {
 		echo wp_json_encode( true );
 	}
 	echo "\n###### wp_scraping_result_end:$scrape_key ######\n";
-}
-
-/**
- * Checks whether current request is a JSON request, or is expecting a JSON response.
- *
- * @since 5.0.0
- *
- * @return bool True if `Accepts` or `Content-Type` headers contain `application/json`.
- *              False otherwise.
- */
-function wp_is_json_request() {
-	if ( isset( $_SERVER['HTTP_ACCEPT'] ) && wp_is_json_media_type( $_SERVER['HTTP_ACCEPT'] ) ) {
-		return true;
-	}
-
-	if ( isset( $_SERVER['CONTENT_TYPE'] ) && wp_is_json_media_type( $_SERVER['CONTENT_TYPE'] ) ) {
-		return true;
-	}
-
-	return false;
-}
-
-/**
- * Checks whether a string is a valid JSON Media Type.
- *
- * @since 5.6.0
- *
- * @param string $media_type A Media Type string to check.
- * @return bool True if string is a valid JSON Media Type.
- */
-function wp_is_json_media_type( $media_type ) {
-	static $cache = array();
-
-	if ( ! isset( $cache[ $media_type ] ) ) {
-		$cache[ $media_type ] = (bool) preg_match( '/(^|\s|,)application\/([\w!#\$&-\^\.\+]+\+)?json(\+oembed)?($|\s|;|,)/i', $media_type );
-	}
-
-	return $cache[ $media_type ];
 }
